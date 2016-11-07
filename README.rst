@@ -1,3 +1,11 @@
+docker build -t cwl .
+docker run --rm -ti -v /var/run/docker.sock:/var/run/docker.sock cwl
+
+
+
+
+
+
 ==================================================================
 Common workflow language tool description reference implementation
 ==================================================================
