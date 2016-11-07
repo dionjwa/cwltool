@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#--tmp-outdir-prefix=`pwd` --tmpdir-prefix=`pwd`
+#--privileged
+#
+docker run --rm -e HOST_PWD="$PWD" -v `pwd`/cwltool:/root/cwltool -v `pwd`/cwltool:/root/cwltool/build/lib.linux-x86_64-2.7/cwltool  -v /var/run/docker.sock:/var/run/docker.sock -ti -v `pwd`:/app -w /app --entrypoint="/usr/local/bin/cwltool" cwl $@
+# docker run --rm --link dind:docker -ti -v `pwd`:/app -w /app cwl $@
+# docker run --rm --link dind:docker -ti -v `pwd`:/app -w /app --entrypoint "/bin/sh" cwl $@
