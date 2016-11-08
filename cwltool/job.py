@@ -148,7 +148,6 @@ class CommandLineJob(object):
             raise WorkflowException("Docker is required for running this tool.")
 
         HOST_PWD = os.environ['HOST_PWD']
-        print("HOST_PWD=" + str(HOST_PWD))
         if img_id:
             runtime = ["docker", "run", "-i"]
             for src in self.pathmapper.files():
@@ -161,11 +160,8 @@ class CommandLineJob(object):
                     with open(createtmp, "w") as f:
                         f.write(vol.resolved.encode("utf-8"))
                     runtime.append(u"--volume=%s:%s:ro" % (createtmp, vol.target))
-            # runtime.append(u"--volume=%s:%s:rw" % (os.path.realpath(self.outdir), "/var/spool/cwl"))
-            # runtime.append(u"--volume=%s:%s:rw" % (os.path.realpath(self.tmpdir), "/tmp"))
-            print("USING /Users/dionamago/autodesk/cwltool")
-            runtime.append(u"--volume=%s:%s:rw" % ('/Users/dionamago/autodesk/cwltool', "/var/spool/cwl"))
-            runtime.append(u"--volume=%s:%s:rw" % ('/Users/dionamago/autodesk/cwltool', "/tmp"))
+            runtime.append(u"--volume=%s:%s:rw" % (HOST_PWD, "/var/spool/cwl"))
+            runtime.append(u"--volume=%s:%s:rw" % (HOST_PWD, "/tmp"))
             runtime.append(u"--workdir=%s" % ("/var/spool/cwl"))
             runtime.append("--read-only=true")
 
