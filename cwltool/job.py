@@ -148,7 +148,6 @@ class CommandLineJob(object):
             raise WorkflowException("Docker is required for running this tool.")
 
         HOST_PWD = os.environ['HOST_PWD']
-        print("HOST_PWD=" + str(HOST_PWD))
         if img_id:
             runtime = ["docker", "run", "-i"]
             for src in self.pathmapper.files():
