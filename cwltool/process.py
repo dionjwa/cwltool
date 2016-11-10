@@ -170,8 +170,10 @@ def getListing(fs_access, rec):
         rec["listing"] = listing
 
 def stageFiles(pm, stageFunc, ignoreWritable=False):
+    print("stageFiles")
     # type: (PathMapper, Callable[..., Any], bool) -> None
     for f, p in pm.items():
+        print("stageFiles %s %s" % (f, p))
         if not os.path.exists(os.path.dirname(p.target)):
             os.makedirs(os.path.dirname(p.target), 0755)
         if p.type == "File":

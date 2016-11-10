@@ -119,6 +119,7 @@ class CommandLineJob(object):
             rm_tmpdir=True, move_outputs="move", **kwargs):
         # type: (bool, bool, bool, bool, bool, Text, **Any) -> Union[Tuple[Text, Dict[None, None]], None]
         if not os.path.exists(self.outdir):
+            print("self.outdir=%s" % self.outdir)
             os.makedirs(self.outdir)
 
         #with open(os.path.join(outdir, "cwl.input.json"), "w") as fp:
@@ -163,6 +164,8 @@ class CommandLineJob(object):
             runtime.append(u"--volume=%s:%s:rw" % (HOST_PWD, "/var/spool/cwl"))
             runtime.append(u"--volume=%s:%s:rw" % (HOST_PWD, "/tmp"))
             runtime.append(u"--workdir=%s" % ("/var/spool/cwl"))
+            # runtime.append(u"--workdir=%s" % (self.outdir))
+            
             runtime.append("--read-only=true")
 
             if kwargs.get("custom_net", None) is not None:
@@ -263,15 +266,20 @@ class CommandLineJob(object):
                 stdout_path = absout
 
             build_job_script = self.builder.build_job_script  # type: Callable[[List[str]], Text]
+            print("self.outdir=" + str(self.outdir))
+
             rcode = _job_popen(
                 [Text(x).encode('utf-8') for x in runtime + self.command_line],
                 stdin_path=stdin_path,
                 stdout_path=stdout_path,
                 stderr_path=stderr_path,
                 env=env,
-                cwd=self.outdir,
+                cwd=self.outdir,#"/var/spool/cwl"
                 build_job_script=build_job_script,
             )
+
+            print("self.successCodes=" + str(self.successCodes))
+            print("rcode=" + str(rcode))
 
             if self.successCodes and rcode in self.successCodes:
                 processStatus = "success"
@@ -284,16 +292,24 @@ class CommandLineJob(object):
             else:
                 processStatus = "permanentFail"
 
+            print("self.generatefiles=%s", self.generatefiles["listing"])
             if self.generatefiles["listing"]:
+                print("generatefiles['listing'] " + str(self.generatefiles["listing"]))
                 def linkoutdir(src, tgt):
+                    print("src=" + str(src))
+                    print("tgt=" + str(tgt))
                     # Need to make the link to the staged file (may be inside
                     # the container)
                     if os.path.islink(tgt):
                         os.remove(tgt)
                         os.symlink(src, tgt)
+                print("stageFiles")
                 stageFiles(generatemapper, linkoutdir, ignoreWritable=True)
 
-            outputs = self.collect_outputs(self.outdir)
+            print("collect_outputs")
+            # outputs = self.collect_outputs(self.outdir)
+            outputs = self.collect_outputs("/app")
+            print("outputs=" + str(outputs))
 
         except OSError as e:
             if e.errno == 2:
@@ -317,8 +333,10 @@ class CommandLineJob(object):
             _logger.debug(u"[job %s] completed %s", self.name, processStatus)
         _logger.debug(u"[job %s] %s", self.name, json.dumps(outputs, indent=4))
 
+        print("self.output_callback")
         self.output_callback(outputs, processStatus)
 
+        print("cleanup")
         if self.stagedir and os.path.exists(self.stagedir):
             _logger.debug(u"[job %s] Removing input staging directory %s", self.name, self.stagedir)
             shutil.rmtree(self.stagedir, True)
@@ -330,6 +348,7 @@ class CommandLineJob(object):
         if move_outputs == "move" and empty_subtree(self.outdir):
             _logger.debug(u"[job %s] Removing empty output directory %s", self.name, self.outdir)
             shutil.rmtree(self.outdir, True)
+        print("done cleanup")
 
 
 def _job_popen(
