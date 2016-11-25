@@ -1,4 +1,4 @@
-docker build -t cwl .
+docker build -t cwltool:latest .
 docker run --rm -ti -v /var/run/docker.sock:/var/run/docker.sock cwl
 
 
