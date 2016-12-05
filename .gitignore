@@ -15,3 +15,5 @@ eggs/
 *~
 \#*\#
 .desktop
+.vagrant
+Vagrantfile
