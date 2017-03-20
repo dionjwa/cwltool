@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION="0.0.5"
+VERSION="0.0.6"
 GIT_TAG=`git rev-parse HEAD`
 if [ ! -z "$TRAVIS_COMMIT" ]; then
 	GIT_TAG=$TRAVIS_COMMIT
@@ -12,10 +12,10 @@ DOCKER_REPO="dionjwa/cwltool-ccc"
 TAG="$DOCKER_REPO:$GIT_TAG"
 echo "TAG=$TAG"
 docker build -t $TAG -f Dockerfile .
-docker push $TAG
+# docker push $TAG
 
-# docker tag $TAG $DOCKER_REPO:$VERSION
-# docker push $DOCKER_REPO:$VERSION
-# echo "$DOCKER_REPO:$VERSION"
+docker tag $TAG $DOCKER_REPO:$VERSION
+docker push $DOCKER_REPO:$VERSION
+echo "$DOCKER_REPO:$VERSION"
 
 echo "$DOCKER_REPO:$GIT_TAG"
