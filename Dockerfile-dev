@@ -1,0 +1,23 @@
+FROM ubuntu:14.04
+MAINTAINER dion@transition9.com
+
+#Add nodemon for quicker development in a running container
+RUN apt-get update -qq && apt-get install -y curl wget unzip
+RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
+RUN apt-get install -y nodejs
+RUN npm install -g nodemon
+
+# Install cwltool
+ADD setup.py README.rst cwltool/ /root/cwltool/
+ADD cwltool/ /root/cwltool/cwltool
+ADD cwltool/schemas/ /root/cwltool/cwltool/schemas
+ADD tests/ /root/cwltool/tests
+RUN cd /root/cwltool && python setup.py install
+
+ENV PYTHONPATH /root
+
+#Add utils for running workflows downloaded from git
+RUN apt-get install -y wget git unzip
+ADD bin /root/bin
+
+#ENTRYPOINT []

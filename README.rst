@@ -1,3 +1,13 @@
+docker build -t ccccwltool:latest .
+docker run --rm -ti ccccwltool
+
+
+cd /Users/dionamago/autodesk/convert_pdb_workflow_example
+../cwltool/bin/cwltool workflows/read_and_clean.cwl pdbfile.yml
+
+
+
+
 ==================================================================
 Common workflow language tool description reference implementation
 ==================================================================

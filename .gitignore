@@ -15,3 +15,9 @@ eggs/
 *~
 \#*\#
 .desktop
+.vagrant
+Vagrantfile
+.bundle
+ccc-local-storage
+tmp
+tests/ccc_docker_workflow/outfile2

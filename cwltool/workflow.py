@@ -148,6 +148,7 @@ def _compare_records(src, sink):
 def object_from_state(state, parms, frag_only, supportsMultipleInput, sourceField, incomplete=False):
     # type: (Dict[Text, WorkflowStateItem], List[Dict[Text, Any]], bool, bool, Text, bool) -> Dict[Text, Any]
     inputobj = {}  # type: Dict[Text, Any]
+    # print("object_from_state state=%s parms=%s frag_only=%s supportsMultipleInput=%s sourceField=%s" % (state, parms, frag_only, supportsMultipleInput, sourceField))
     for inp in parms:
         iid = inp["id"]
         if frag_only:
@@ -252,6 +253,8 @@ class WorkflowJob(object):
         self.made_progress = True
 
     def try_make_job(self, step, **kwargs):
+        print("try_make_job!!!!!!!!!!!!!!")
+        _logger.debug(u"try_make_job!!!!!!!!!!!!!!")
         # type: (WorkflowJobStep, **Any) -> Generator
         inputparms = step.tool["inputs"]
         outputparms = step.tool["outputs"]

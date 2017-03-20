@@ -1,0 +1,11 @@
+build/
+dist/
+eggs/
+.vagrant
+.bundle
+docker-compose.yml
+Dockerfile
+.gitignore
+ccc-local-storage
+test
+tests/ccc_docker_workflow/tmp

@@ -162,9 +162,12 @@ class Builder(object):
 
     def tostr(self, value):  # type: (Any) -> Text
         if isinstance(value, dict) and value.get("class") in ("File", "Directory"):
-            if "path" not in value:
-                raise WorkflowException(u"%s object missing \"path\": %s" % (value["class"], value))
-            return value["path"]
+            # if "path" not in value:
+            #     raise WorkflowException(u"%s object missing \"path\": %s" % (value["class"], value))
+            # return value["path"]
+            if "basename" not in value:
+                raise WorkflowException(u"%s object missing \"basename\": %s" % (value["class"], value))
+            return "/inputs/" + value["basename"]
         else:
             return Text(value)
 

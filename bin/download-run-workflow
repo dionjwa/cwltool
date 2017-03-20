@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+
+# Download a git repo that contains a CWL workflow, and run
+# that workflow.
+
+set -e
+
+printenv
+
+if [ "$1" = "help" ] || [ "$1" = "--help" ] || [ $# -eq 0 ] ;
+then
+	SCRIPTNAME=`basename "$0"`
+	echo ""
+	echo "    Download a CWL workflow from git, and execute that wokflow with inputs."
+	echo "    When the workflow executes, the working directory will be the git repo:"
+	echo ""
+	echo "         $SCRIPTNAME <git url> <git sha> <cwl-workflow-file.cwl> <inputs file.yml>"
+	echo ""
+	exit 0
+fi
+
+if [ -z ${REPO_ROOT} ];
+then
+	REPO_ROOT="/tmp/repos"
+fi
+
+if [ -z ${CCC} ];
+then
+	CCC="http://ccc:9000/api/rpc"
+fi
+
+RUN_DIR=$OUTPUTS
+
+GITURL=$1
+GITSHA=$2
+CWL_WORKFLOW_FILE=$3
+CWL_INPUTS=$4
+# GITURL="https://github.com/dionjwa/cwltool"
+# GITURL="https://github.com/dionjwa/cwltool.git"
+if [[ $GITURL == *"https://github.com/"* ]]; then
+  GITURL=${GITURL:19}
+fi
+if [[ $GITURL == *".git"* ]]; then
+  GITURL=${GITURL::${#GITURL}-4}
+fi
+
+IFS='/' read -r -a array <<< "$GITURL"
+
+GIT_USERNAME="${array[0]}"
+GIT_REPO="${array[1]}"
+echo "GITURL=$GITURL"
+echo "GIT_USERNAME=$GIT_USERNAME"
+echo "GITSHA=$GITSHA"
+
+#https://github.com/[user]/[repo]/[branch].zip
+ZIPURL="https://github.com/${GIT_USERNAME}/${GIT_REPO}/archive/${GITSHA}.zip"
+ZIPFILE=`echo ${ZIPURL##*/}`
+
+echo "ZIPURL=$ZIPURL"
+echo "CWL_WORKFLOW_FILE=$CWL_WORKFLOW_FILE"
+echo "CWL_INPUTS=$CWL_INPUTS"
+echo "CCC=$CCC"
+echo "REPO_ROOT=$REPO_ROOT"
+
+ZIP_PATH_BASE="$REPO_ROOT/${GIT_USERNAME}"
+ZIP_PATH_FULL="$ZIP_PATH_BASE/${GIT_REPO}-${GITSHA}"
+echo "ZIP_PATH_BASE=$ZIP_PATH_BASE"
+echo "ZIP_PATH_FULL=$ZIP_PATH_FULL"
+
+mkdir -p $ZIP_PATH_BASE
+
+if [ -d $ZIP_PATH_FULL ] ;
+then
+	echo "$ZIP_PATH_FULL exists!!!!"
+else
+	echo "$ZIP_PATH_FULL does NOT exist"
+	wget $ZIPURL
+	ZIPFILE=`echo ${ZIPURL##*/}`
+	unzip $ZIPFILE -d $ZIP_PATH_BASE
+	rm $ZIPFILE
+fi
+
+RUN_DIR=$OUTPUTS
+if [ -z ${RUN_DIR} ];
+then
+	RUN_DIR="${PWD}/tmp/runs/${GIT_USERNAME}/${GIT_REPO}/"
+fi
+
+echo "RUN_DIR=$RUN_DIR"
+mkdir -p $RUN_DIR
+cd $RUN_DIR
+
+if [[ $CWL_INPUTS != /* ]] && [[ $CWL_INPUTS != .* ]];
+then
+	echo "$CWL_INPUTS does not start with / or ."
+	CWL_INPUTS="$ZIP_PATH_FULL/$CWL_INPUTS"
+# else
+# 	CWL_INPUTS="$CWL_INPUTS"
+fi
+
+echo "cwltool --debug $ZIP_PATH_FULL/$CWL_WORKFLOW_FILE $CWL_INPUTS"
+cwltool --debug $ZIP_PATH_FULL/$CWL_WORKFLOW_FILE $CWL_INPUTS

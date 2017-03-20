@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# docker run --rm -e HOST_PWD="$PWD" -v /var/run/docker.sock:/var/run/docker.sock -ti -v `pwd`:/app -w /app dionjwa/cwltool $@
+
+BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/../
+# echo $BASE_DIR
+# docker run --rm -ti -v $BASE_DIR/cwltool/job.py:/root/cwltool/build/lib.linux-x86_64-2.7/cwltool/job.py -v $BASE_DIR/cwltool/job.py:/root/cwltool/cwltool/job.py -v $BASE_DIR/cwltool/job.py:/root/cwltool/job.py -v `pwd`:/app -w /app --entrypoint "/bin/sh" ccccwltool:latest
+docker run --rm -ti -v `pwd`/cwltool/job.py:/root/cwltool/build/lib.linux-x86_64-2.7/cwltool/job.py -v `pwd`/cwltool/job.py:/root/cwltool/cwltool/job.py -v `pwd`/cwltool/job.py:/root/cwltool/job.py -v `pwd`:/app -w /app --entrypoint "/bin/bash" ccccwltool:latest
+# $@

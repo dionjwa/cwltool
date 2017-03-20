@@ -19,7 +19,7 @@ from typing import Any, Callable, cast, Generator, Text, Union
 from .builder import CONTENT_LIMIT, substitute, Builder, adjustFileObjs
 from .pathmapper import adjustDirObjs
 from .errors import WorkflowException
-from .job import CommandLineJob
+from .job_ccc import CloudCommandLineJob
 from .pathmapper import PathMapper, get_listing, trim_listing
 from .process import Process, shortname, uniquename, normalizeFilesDirs, compute_checksums
 from .stdfsaccess import StdFsAccess
@@ -163,7 +163,9 @@ class CommandLineTool(Process):
         super(CommandLineTool, self).__init__(toolpath_object, **kwargs)
 
     def makeJobRunner(self):  # type: () -> CommandLineJob
-        return CommandLineJob()
+        # return CommandLineJob()
+        print("makeJobRunner CloudCommandLineJob")
+        return CloudCommandLineJob()
 
     def makePathMapper(self, reffiles, stagedir, **kwargs):
         # type: (List[Any], Text, **Any) -> PathMapper
@@ -371,6 +373,7 @@ class CommandLineTool(Process):
             for t in evr["envDef"]:
                 j.environment[t["envName"]] = builder.do_eval(t["envValue"])
 
+        print("builder.bindings=%s" % (builder.bindings))
         shellcmd = self.get_requirement("ShellCommandRequirement")[0]
         if shellcmd:
             cmd = []  # type: List[Text]
@@ -381,6 +384,7 @@ class CommandLineTool(Process):
                 cmd.extend(aslist(arg))
             j.command_line = ["/bin/sh", "-c", " ".join(cmd)]
         else:
+            print('FLATTENING CMD LINE builder.bindings=%s builder.generate_arg=%s' % (builder.bindings, builder.generate_arg))
             j.command_line = flatten(map(builder.generate_arg, builder.bindings))
 
         j.pathmapper = builder.pathmapper

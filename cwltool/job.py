@@ -329,6 +329,8 @@ class CommandLineJob(object):
         if _logger.isEnabledFor(logging.DEBUG):
             _logger.debug(u"[job %s] %s", self.name, json.dumps(outputs, indent=4))
 
+
+
         self.output_callback(outputs, processStatus)
 
         if self.stagedir and os.path.exists(self.stagedir):

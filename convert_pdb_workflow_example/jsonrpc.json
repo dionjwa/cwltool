@@ -1,0 +1,26 @@
+{
+	"jsonrpc":"2.0",
+	"method": "cloudcomputecannon.run",
+	"DISABLEcmd":["/bin/bash", "./ccc_convert.sh"],
+	"DISABLEimage":"dionjwa/cwltool:7daa0e3f",
+	"DISABLECmd":["ccc_convert.sh"],
+	"DISABLE_Entrypoint":"/bin/bash",
+	"cmd": ["/bin/bash", "ccc_convert.sh"],
+	"params": {
+		"image":"cwltool:latest",
+		"createOptions": {
+			"Cmd":["/bin/bash", "ccc_convert.sh"],
+			"HostConfig": {
+				"Binds":[
+					"/var/run/docker.sock:/var/run/docker.sock"
+				]
+			},
+			"Entrypoint":null,
+			"Env": []
+		},
+		"workingDir":"/app",
+		"containerInputsMountPath":"/app",
+		"containerOutputsMountPath":"/outputs",
+		"wait": true
+	}
+}

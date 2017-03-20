@@ -205,7 +205,13 @@ def single_job_executor(t,  # type: Process
     final_output = []
     final_status = []
 
+    print("single_job_executor")
+    print('t=%s' % (t))
+    print('job_order_object=%s' % (job_order_object))
+    print('kwargs=%s' % (kwargs))
+
     def output_callback(out, processStatus):
+        print('single_job_executor output_callback')
         final_status.append(processStatus)
         final_output.append(out)
 
@@ -761,7 +767,7 @@ def main(argsl=None,  # type: List[str]
 
             # This is the workflow output, it needs to be written
             if out is not None:
-
+                print('BEGIN-FINAL-OUTPUT')
                 def locToPath(p):
                     if p["location"].startswith("file://"):
                         p["path"] = uri_file_path(p["location"])
